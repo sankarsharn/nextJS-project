@@ -1,18 +1,9 @@
-import { clerkMiddleware } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
+import { authMiddleware } from '@clerk/nextjs'
 
-export default function middleware(req) {
-    const { pathname } = req.nextUrl;
-
-    // ✅ Allow API routes
-    if (pathname.startsWith("/api/")) {
-        console.log('✅ API route allowed:', pathname);
-        return NextResponse.next();
-    }
-
-    return clerkMiddleware()(req);
-}
+export default authMiddleware({
+    publicRoutes: ["/" , "/api/webhooks"]
+});
 
 export const config = {
-    matcher: "/((?!api|_next|.*\\..*).*)",
+    matcher: ["/((?!.+\\.[\\w]+$|_next).*)","/","/(api|trpc).(*)"],
 };
