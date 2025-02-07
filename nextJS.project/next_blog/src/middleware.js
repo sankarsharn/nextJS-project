@@ -4,20 +4,16 @@ import { NextResponse } from "next/server";
 export default function middleware(req) {
     const { pathname } = req.nextUrl;
 
-    // Allow public access to all API routes
+    // Allow all API routes without authentication
     if (pathname.startsWith("/api/")) {
-        return NextResponse.next();
+        return NextResponse.next(); // ✅ This ensures API routes work
     }
 
-    return clerkMiddleware({
-        signInUrl: "/sign-in",
-        signUpUrl: "/sign-up",
-        afterSignUpUrl: "/",
-        afterSignInUrl: "/",
-    })(req);
+    // Apply Clerk middleware for all non-API routes
+    return clerkMiddleware()(req);
 }
 
-// Apply middleware only to specific routes
+// Ensure the matcher allows API routes
 export const config = {
-    matcher: "/((?!api|_next|.*\\..*).*)",
+    matcher: "/((?!_next|.*\\..*).*)", // ✅ This prevents blocking /api/*
 };
